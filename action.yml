@@ -1,0 +1,52 @@
+name: linear-release-action
+description: Run Linear Release CLI to sync deployments with Linear releases
+author: Linear
+
+branding:
+  icon: tag
+  color: blue
+
+inputs:
+  access_key:
+    description: Linear pipeline access key for authentication. Store this in GitHub Secrets.
+    required: true
+  command:
+    description: Command to run. Use "sync" to create/update a release, "complete" to mark it done, or "update" to change deployment stage.
+    required: false
+    default: sync
+  name:
+    description: Custom release name. Only used with the "sync" command.
+    required: false
+  version:
+    description: Release version identifier (e.g., "v1.2.3").
+    required: false
+  stage:
+    description: Deployment stage such as "staging" or "production". Required when command is "update".
+    required: false
+  include_paths:
+    description: Filter commits by file paths using comma-separated globs (e.g., "apps/web/**,packages/**"). Useful for monorepos.
+    required: false
+  cli_version:
+    description: Linear Release CLI version tag to install (e.g., "v0.1.0"). Defaults to latest.
+    required: false
+    default: latest
+
+runs:
+  using: composite
+  steps:
+    - name: Install Linear Release CLI
+      shell: bash
+      run: bash "${{ github.action_path }}/install.sh"
+      env:
+        CLI_VERSION: ${{ inputs.cli_version }}
+
+    - name: Run Linear Release
+      shell: bash
+      run: bash "${{ github.action_path }}/run.sh"
+      env:
+        LINEAR_ACCESS_KEY: ${{ inputs.access_key }}
+        COMMAND: ${{ inputs.command }}
+        INPUT_NAME: ${{ inputs.name }}
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_STAGE: ${{ inputs.stage }}
+        INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}

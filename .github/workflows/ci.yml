@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint shell scripts
+        run: shellcheck install.sh run.sh
+
+      - name: Validate action.yml
+        run: |
+          npm install -g @action-validator/cli
+          action-validator action.yml
+
+  test-install:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test CLI installation
+        run: |
+          bash install.sh
+          ./linear-release --version
+        env:
+          CLI_VERSION: latest
+          RUNNER_OS: ${{ runner.os }}
