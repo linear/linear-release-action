@@ -67,7 +67,7 @@ Creates or updates a release by scanning commits for Linear issue identifiers.
 
 ### complete
 
-Marks the current release as complete.
+Marks the current release as complete. Only applicable to scheduled pipelines, as continuous pipelines create releases in the completed stage automatically.
 
 ```yaml
 - uses: linear/linear-release-action@v0.1.0
@@ -78,7 +78,7 @@ Marks the current release as complete.
 
 ### update
 
-Updates the deployment stage of the current release.
+Updates the deployment stage of the current release. Only applicable to scheduled pipelines, as continuous pipelines create releases in the completed stage automatically.
 
 ```yaml
 - uses: linear/linear-release-action@v0.1.0
