@@ -51,16 +51,18 @@ steps:
 | `version`       | No       |          | Release version identifier                                                 |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
-| `cli_version`   | No       | `latest` | Linear Release CLI version tag to install                                  |
+| `cli_version`   | No       | `v0.2.0` | Linear Release CLI version tag to install                                  |
+
+`cli_version` can be set to `latest` to always download the newest CLI release. This is opt-in and may include breaking changes.
 
 ## Outputs
 
-| Output            | Description                  |
-| ----------------- | ---------------------------- |
-| `release-id`      | The Linear release ID        |
-| `release-name`    | The Linear release name      |
-| `release-version` | The Linear release version   |
-| `release-url`     | URL to the Linear release    |
+| Output            | Description                |
+| ----------------- | -------------------------- |
+| `release-id`      | The Linear release ID      |
+| `release-name`    | The Linear release name    |
+| `release-version` | The Linear release version |
+| `release-url`     | URL to the Linear release  |
 
 Outputs are empty when no release is created (e.g. no matching commits found).
 
