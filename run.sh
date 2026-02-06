@@ -41,7 +41,7 @@ fi
 
 args=()
 [[ -n "${INPUT_NAME:-}" ]] && args+=("--name=${INPUT_NAME}")
-[[ -n "${INPUT_VERSION:-}" ]] && args+=("--version=${INPUT_VERSION}")
+[[ -n "${INPUT_VERSION:-}" ]] && args+=("--release-version=${INPUT_VERSION}")
 [[ -n "${INPUT_STAGE:-}" ]] && args+=("--stage=${INPUT_STAGE}")
 [[ -n "${INPUT_INCLUDE_PATHS:-}" ]] && args+=("--include-paths=${INPUT_INCLUDE_PATHS}")
 
