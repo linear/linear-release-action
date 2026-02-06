@@ -43,15 +43,44 @@ steps:
 
 ## Inputs
 
-| Input | Required | Default | Description |
-| --- | --- | --- | --- |
-| `access_key` | Yes | | Linear pipeline access key for authentication |
-| `command` | No | `sync` | Command to run: `sync`, `complete`, or `update` |
-| `name` | No | | Custom release name (only used with `sync` command) |
-| `version` | No | | Release version identifier |
-| `stage` | No | | Deployment stage such as `staging` or `production` (required for `update`) |
-| `include_paths` | No | | Filter commits by file paths (comma-separated globs for monorepos) |
-| `cli_version` | No | `latest` | Linear Release CLI version tag to install |
+| Input           | Required | Default  | Description                                                                |
+| --------------- | -------- | -------- | -------------------------------------------------------------------------- |
+| `access_key`    | Yes      |          | Linear pipeline access key for authentication                              |
+| `command`       | No       | `sync`   | Command to run: `sync`, `complete`, or `update`                            |
+| `name`          | No       |          | Custom release name (only used with `sync` command)                        |
+| `version`       | No       |          | Release version identifier                                                 |
+| `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
+| `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
+| `cli_version`   | No       | `latest` | Linear Release CLI version tag to install                                  |
+
+## Outputs
+
+| Output            | Description                  |
+| ----------------- | ---------------------------- |
+| `release-id`      | The Linear release ID        |
+| `release-name`    | The Linear release name      |
+| `release-version` | The Linear release version   |
+| `release-url`     | URL to the Linear release    |
+
+Outputs are empty when no release is created (e.g. no matching commits found).
+
+### Using outputs
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - uses: linear/linear-release-action@v0.1.0
+    id: release
+    with:
+      access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+
+  - name: Use release outputs
+    if: steps.release.outputs.release-url
+    run: echo "Release URL is ${{ steps.release.outputs.release-url }}"
+```
 
 ## Commands
 

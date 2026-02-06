@@ -14,6 +14,16 @@ if [[ ! -x "$BIN_PATH" ]]; then
   exit 1
 fi
 
+if ! command -v jq &>/dev/null; then
+  echo "::error::jq is required but not found. Install jq or use a GitHub-hosted runner."
+  exit 1
+fi
+
+if [[ -z "${GITHUB_OUTPUT:-}" ]]; then
+  echo "::error::GITHUB_OUTPUT is not set. This action must run inside GitHub Actions."
+  exit 1
+fi
+
 COMMAND="${COMMAND:-sync}"
 case "$COMMAND" in
   sync|complete|update)
@@ -35,5 +45,31 @@ args=()
 [[ -n "${INPUT_STAGE:-}" ]] && args+=("--stage=${INPUT_STAGE}")
 [[ -n "${INPUT_INCLUDE_PATHS:-}" ]] && args+=("--include-paths=${INPUT_INCLUDE_PATHS}")
 
-echo "Running: $BIN_PATH $COMMAND ${args[*]:-}"
-"$BIN_PATH" "$COMMAND" ${args[@]+"${args[@]}"}
+echo "Running: $BIN_PATH $COMMAND ${args[*]}"
+
+output=$("$BIN_PATH" "$COMMAND" --json "${args[@]}")
+
+# Print the raw JSON so it appears in workflow logs
+echo "$output"
+
+# Validate output is valid JSON before parsing
+if ! jq -e . >/dev/null 2>&1 <<<"$output"; then
+  echo "::error::Linear Release CLI did not return valid JSON"
+  exit 1
+fi
+
+# Parse and write outputs
+{
+  echo "release-id<<EOF"
+  jq -r '.release.id // empty' <<<"$output"
+  echo "EOF"
+  echo "release-name<<EOF"
+  jq -r '.release.name // empty' <<<"$output"
+  echo "EOF"
+  echo "release-version<<EOF"
+  jq -r '.release.version // empty' <<<"$output"
+  echo "EOF"
+  echo "release-url<<EOF"
+  jq -r '.release.url // empty' <<<"$output"
+  echo "EOF"
+} >> "$GITHUB_OUTPUT"
