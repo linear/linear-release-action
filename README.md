@@ -36,7 +36,7 @@ steps:
     with:
       fetch-depth: 0 # Required for commit history
 
-  - uses: linear/linear-release-action@v0.1.0
+  - uses: linear/linear-release-action@v0
     with:
       access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
 ```
@@ -74,7 +74,7 @@ steps:
     with:
       fetch-depth: 0
 
-  - uses: linear/linear-release-action@v0.1.0
+  - uses: linear/linear-release-action@v0
     id: release
     with:
       access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
@@ -91,7 +91,7 @@ steps:
 Creates or updates a release by scanning commits for Linear issue identifiers.
 
 ```yaml
-- uses: linear/linear-release-action@v0.1.0
+- uses: linear/linear-release-action@v0
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
 ```
@@ -101,7 +101,7 @@ Creates or updates a release by scanning commits for Linear issue identifiers.
 Marks the current release as complete. Only applicable to scheduled pipelines, as continuous pipelines create releases in the completed stage automatically.
 
 ```yaml
-- uses: linear/linear-release-action@v0.1.0
+- uses: linear/linear-release-action@v0
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     command: complete
@@ -112,7 +112,7 @@ Marks the current release as complete. Only applicable to scheduled pipelines, a
 Updates the deployment stage of the current release. Only applicable to scheduled pipelines, as continuous pipelines create releases in the completed stage automatically.
 
 ```yaml
-- uses: linear/linear-release-action@v0.1.0
+- uses: linear/linear-release-action@v0
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     command: update
@@ -124,7 +124,7 @@ Updates the deployment stage of the current release. Only applicable to schedule
 Filter commits by file paths to track releases for specific packages:
 
 ```yaml
-- uses: linear/linear-release-action@v0.1.0
+- uses: linear/linear-release-action@v0
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     include_paths: apps/web/**,packages/shared/**
