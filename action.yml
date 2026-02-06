@@ -18,7 +18,7 @@ inputs:
     description: Custom release name. Only used with the "sync" command.
     required: false
   version:
-    description: Release version identifier (e.g., "v1.2.3").
+    description: Release version identifier. Maps to CLI --release-version (e.g., "v1.2.3").
     required: false
   stage:
     description: Deployment stage such as "staging" or "production". Required when command is "update".
@@ -27,9 +27,9 @@ inputs:
     description: Filter commits by file paths using comma-separated globs (e.g., "apps/web/**,packages/**"). Useful for monorepos.
     required: false
   cli_version:
-    description: Linear Release CLI version tag to install (e.g., "v0.1.0"). Defaults to latest.
+    description: Linear Release CLI version tag to install (e.g., "v0.2.0").
     required: false
-    default: latest
+    default: v0.2.0
 
 outputs:
   release-id:
