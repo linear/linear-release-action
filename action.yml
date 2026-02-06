@@ -31,6 +31,20 @@ inputs:
     required: false
     default: latest
 
+outputs:
+  release-id:
+    description: The Linear release ID
+    value: ${{ steps.run.outputs.release-id }}
+  release-name:
+    description: The Linear release name
+    value: ${{ steps.run.outputs.release-name }}
+  release-version:
+    description: The Linear release version
+    value: ${{ steps.run.outputs.release-version }}
+  release-url:
+    description: URL to the Linear release
+    value: ${{ steps.run.outputs.release-url }}
+
 runs:
   using: composite
   steps:
@@ -41,6 +55,7 @@ runs:
         CLI_VERSION: ${{ inputs.cli_version }}
 
     - name: Run Linear Release
+      id: run
       shell: bash
       run: bash "${{ github.action_path }}/run.sh"
       env:
