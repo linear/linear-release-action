@@ -27,9 +27,9 @@ inputs:
     description: Filter commits by file paths using comma-separated globs (e.g., "apps/web/**,packages/**"). Useful for monorepos.
     required: false
   cli_version:
-    description: Linear Release CLI version tag to install (e.g., "v0.3.0").
+    description: Linear Release CLI version tag to install (e.g., "v0.4.0").
     required: false
-    default: v0.3.0
+    default: v0.4.0
 
 outputs:
   release-id:

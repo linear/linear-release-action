@@ -51,7 +51,7 @@ steps:
 | `version`       | No       |          | Release version identifier                                                 |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
-| `cli_version`   | No       | `v0.3.0` | Linear Release CLI version tag to install                                  |
+| `cli_version`   | No       | `v0.4.0` | Linear Release CLI version tag to install                                  |
 
 `cli_version` can be set to `latest` to always download the newest CLI release. This is opt-in and may include breaking changes.
 
