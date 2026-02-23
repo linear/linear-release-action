@@ -39,6 +39,10 @@ if [[ "$COMMAND" == "update" && -z "${INPUT_STAGE:-}" ]]; then
   exit 1
 fi
 
+if [[ "$COMMAND" != "sync" && -n "${INPUT_NAME:-}" ]]; then
+  echo "::warning::name input is ignored when command is '$COMMAND' (only used with 'sync')"
+fi
+
 args=()
 [[ -n "${INPUT_NAME:-}" ]] && args+=("--name=${INPUT_NAME}")
 [[ -n "${INPUT_VERSION:-}" ]] && args+=("--release-version=${INPUT_VERSION}")
