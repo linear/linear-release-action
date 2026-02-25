@@ -48,7 +48,7 @@ steps:
 | `access_key`    | Yes      |          | Linear pipeline access key for authentication                              |
 | `command`       | No       | `sync`   | Command to run: `sync`, `complete`, or `update`                            |
 | `name`          | No       |          | Custom release name for `sync`. Continuous pipelines: used on create. Scheduled pipelines: used only when `sync` creates a release; existing release names are preserved. Ignored (with warning) for `complete` and `update`. |
-| `version`       | No       |          | Release version identifier                                                 |
+| `version`       | No       |          | Release version identifier (alias: `release_version`)                      |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
 | `cli_version`   | No       | `v0.4.0` | Linear Release CLI version tag to install                                  |

@@ -24,6 +24,11 @@ if [[ -z "${GITHUB_OUTPUT:-}" ]]; then
   exit 1
 fi
 
+# Resolve alias: "release_version" → "version"
+if [[ -z "${INPUT_VERSION:-}" && -n "${INPUT_RELEASE_VERSION:-}" ]]; then
+  INPUT_VERSION="${INPUT_RELEASE_VERSION}"
+fi
+
 COMMAND="${COMMAND:-sync}"
 case "$COMMAND" in
   sync|complete|update)

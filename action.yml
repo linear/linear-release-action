@@ -20,6 +20,9 @@ inputs:
   version:
     description: Release version identifier. Maps to CLI --release-version (e.g., "v1.2.3").
     required: false
+  release_version:
+    description: Alias for "version". Maps to CLI --release-version.
+    required: false
   stage:
     description: Deployment stage such as "staging" or "production". Required when command is "update".
     required: false
@@ -63,5 +66,6 @@ runs:
         COMMAND: ${{ inputs.command }}
         INPUT_NAME: ${{ inputs.name }}
         INPUT_VERSION: ${{ inputs.version }}
+        INPUT_RELEASE_VERSION: ${{ inputs.release_version }}
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
