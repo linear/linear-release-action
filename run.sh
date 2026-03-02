@@ -58,9 +58,8 @@ if [[ -n "${INPUT_LOG_LEVEL:-}" ]]; then
   case "$INPUT_LOG_LEVEL" in
     quiet)   args+=("--quiet") ;;
     verbose) args+=("--verbose") ;;
-    debug)   args+=("--debug") ;;
     *)
-      echo "::error::Invalid log_level '$INPUT_LOG_LEVEL'. Must be: quiet, verbose, or debug"
+      echo "::error::Invalid log_level '$INPUT_LOG_LEVEL'. Must be: quiet or verbose"
       exit 1
       ;;
   esac

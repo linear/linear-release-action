@@ -51,7 +51,7 @@ steps:
 | `version`       | No       |          | Release version identifier (alias: `release_version`)                      |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
-| `log_level`     | No       |          | Log verbosity: `quiet`, `verbose`, or `debug`. Omit for default output.    |
+| `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.              |
 | `cli_version`   | No       | `latest` | Linear Release CLI version tag to install                                  |
 
 `cli_version` defaults to `latest`, so the action automatically uses the newest CLI release. For reproducible builds, pin an exact tag (for example, `v0.5.0`). If stability is more important than automatic updates, prefer a pinned version.
