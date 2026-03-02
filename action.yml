@@ -29,6 +29,9 @@ inputs:
   include_paths:
     description: Filter commits by file paths using comma-separated globs (e.g., "apps/web/**,packages/**"). Useful for monorepos.
     required: false
+  log_level:
+    description: Log verbosity. Use "quiet" for errors only, "verbose" for detailed progress, or "debug" for full diagnostics. Omit for default output.
+    required: false
   cli_version:
     description: Linear Release CLI version to install (e.g., "v0.5.0" or "latest").
     required: false
@@ -69,3 +72,4 @@ runs:
         INPUT_RELEASE_VERSION: ${{ inputs.release_version }}
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
+        INPUT_LOG_LEVEL: ${{ inputs.log_level }}
