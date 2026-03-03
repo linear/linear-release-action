@@ -18,12 +18,14 @@
   <a href="https://github.com/linear/linear-release-action/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Linear Release Action is released under the MIT license."></a>
 </p>
 
-> [!NOTE]
-> This project is currently in beta and requires enrollment to use. If you're interested in trying it out or need assistance, please contact [Linear support](https://linear.app/contact) or your account manager. APIs and commands may change in future releases.
+> [!IMPORTANT]
+> Linear Release is in **closed beta**. Contact [Linear support](https://linear.app/contact) or your account manager to request access. APIs and commands may change.
 
 ## Overview
 
 This action wraps the [Linear Release CLI](https://github.com/linear/linear-release) to integrate your CI/CD pipeline with [Linear's release management](https://linear.app/docs/releases). It automatically scans commits for Linear issue identifiers, detects pull request references, and creates or updates releases in Linear.
+
+For full documentation on pipeline types, how commit scanning works, path filtering details, and troubleshooting, see the [Linear Release CLI README](https://github.com/linear/linear-release#readme). This README covers the GitHub Action-specific configuration.
 
 ## Quick Start
 
@@ -130,9 +132,9 @@ Updates the deployment stage of the current release. Only applicable to schedule
 
 For scheduled pipelines, prefer always passing `version` in CI, especially when releases overlap.
 
-### Monorepo filtering
+### Path filtering
 
-Filter commits by file paths to track releases for specific packages:
+Filter commits by file paths to track releases for specific packages, useful for monorepos:
 
 ```yaml
 - uses: linear/linear-release-action@v0
