@@ -73,3 +73,8 @@ runs:
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
         INPUT_LOG_LEVEL: ${{ inputs.log_level }}
+
+    - name: Cleanup CLI binary
+      if: always()
+      shell: bash
+      run: rm -f "${{ github.action_path }}/linear-release"
