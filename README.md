@@ -54,7 +54,7 @@ steps:
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`) |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)         |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.              |
-| `timeout`       | No       |          | Maximum time to wait for the command to complete (e.g., `30s`, `5m`)       |
+| `timeout`       | No       |          | Maximum time in seconds to wait for the command to complete (e.g., `30`)   |
 | `cli_version`   | No       | `latest` | Linear Release CLI version tag to install                                  |
 
 `cli_version` defaults to `latest`, so the action automatically uses the newest CLI release. For reproducible builds, pin an exact tag (for example, `v0.5.0`). If stability is more important than automatic updates, prefer a pinned version.

@@ -33,7 +33,7 @@ inputs:
     description: Log verbosity. Use "quiet" for errors only or "verbose" for detailed progress. Omit for default output.
     required: false
   timeout:
-    description: Maximum time to wait for the command to complete (e.g., "30s", "5m"). Passed directly to CLI --timeout flag.
+    description: Maximum time in seconds to wait for the command to complete (e.g., "30"). Passed directly to CLI --timeout flag.
     required: false
   cli_version:
     description: Linear Release CLI version to install (e.g., "v0.5.0" or "latest").
