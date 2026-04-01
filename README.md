@@ -55,9 +55,7 @@ steps:
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
-| `cli_version`   | No       | `latest` | Linear Release CLI version tag to install                                                                                                                                                                                     |
-
-`cli_version` defaults to `latest`, so the action automatically uses the newest CLI release. For reproducible builds, pin an exact tag (for example, `v0.5.0`). If stability is more important than automatic updates, prefer a pinned version.
+| `cli_version`   | No       | `v0.6.4` | Linear Release CLI version to install                                                                                                                                                                                         |
 
 ## Outputs
 
@@ -143,6 +141,10 @@ Filter commits by file paths to track releases for specific packages, useful for
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     include_paths: apps/web/**,packages/shared/**
 ```
+
+## Versioning
+
+Each release of this action defaults to a specific [Linear Release CLI](https://github.com/linear/linear-release) version. Pinning the action — whether by tag (`@v0`) or commit SHA — also pins the CLI. Set `cli_version` to override.
 
 ## Troubleshooting
 
