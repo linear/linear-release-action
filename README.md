@@ -18,9 +18,6 @@
   <a href="https://github.com/linear/linear-release-action/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Linear Release Action is released under the MIT license."></a>
 </p>
 
-> [!IMPORTANT]
-> Linear Release is in **public beta**. Contact [Linear support](https://linear.app/contact) or your account manager to request access. APIs and commands may change.
-
 ## Overview
 
 This action wraps the [Linear Release CLI](https://github.com/linear/linear-release) to integrate your CI/CD pipeline with [Linear's release management](https://linear.app/docs/releases). It automatically scans commits for Linear issue identifiers, detects pull request references, and creates or updates releases in Linear.
