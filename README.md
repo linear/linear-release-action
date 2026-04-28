@@ -4,7 +4,7 @@
   </a>
 </p>
 <h1 align="center">
-  Linear Release Action
+  @linear/release-action
 </h1>
 <h3 align="center">
   GitHub Action for syncing deployments with Linear releases
