@@ -42,7 +42,7 @@ steps:
 
 ### AI-assisted setup
 
-Use the Linear Release setup skill to generate CI configuration tailored to your project. It supports walks you through continuous vs. scheduled pipelines, monorepo path filtering, and more.
+Use the Linear Release setup skill to generate CI configuration tailored to your project. It walks you through continuous vs. scheduled pipelines, monorepo path filtering, and more.
 
 Copy the [SKILL.md](https://github.com/linear/linear-release/blob/main/skills/linear-release-setup/SKILL.md) into your project, or install it with [skills.sh](https://skills.sh):
 
