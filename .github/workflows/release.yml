@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Cut release ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Validate tag and resolve major
+        id: vars
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Invalid tag format: $TAG (expected vMAJOR.MINOR.PATCH)"
+            exit 1
+          fi
+
+          MAJOR="${VERSION%%.*}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "major=v$MAJOR" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Move floating major tag forward
+        run: |
+          git tag -f "${{ steps.vars.outputs.major }}" "${{ steps.vars.outputs.tag }}"
+          git push origin "${{ steps.vars.outputs.major }}" --force
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.vars.outputs.tag }}" \
+            --title "${{ steps.vars.outputs.tag }}" \
+            --generate-notes
