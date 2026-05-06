@@ -8,11 +8,14 @@ BIN_PATH="${ACTION_PATH}/linear-release"
 case "${RUNNER_OS:-}" in
   Linux)
     ARCH="$(uname -m)"
-    if [[ "$ARCH" != "x86_64" && "$ARCH" != "amd64" ]]; then
-      echo "::error::Unsupported Linux arch: $ARCH. Only x86_64 is supported."
+    if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
+      ASSET="linear-release-linux-x64"
+    elif [[ "$ARCH" == "aarch64" || "$ARCH" == "arm64" ]]; then
+      ASSET="linear-release-linux-arm64"
+    else
+      echo "::error::Unsupported Linux arch: $ARCH. Supported: x86_64, aarch64."
       exit 1
     fi
-    ASSET="linear-release-linux-x64"
     ;;
   macOS)
     ARCH="$(uname -m)"

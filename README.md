@@ -159,7 +159,7 @@ Each release of this action defaults to a specific [Linear Release CLI](https://
 
 **"Unsupported OS" or "Unsupported arch" error**
 
-The action only supports Linux x86_64 and macOS x86_64/arm64 runners. Windows is not supported.
+The action supports Linux (x86_64, aarch64) and macOS (x86_64, arm64) runners. Windows is not supported.
 
 **"access_key input is required" error**
 
