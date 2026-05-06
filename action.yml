@@ -15,7 +15,7 @@ inputs:
     required: false
     default: sync
   name:
-    description: Custom release name. Only used with the "sync" command.
+    description: Custom release name. Applied to the targeted release for "sync", "complete", and "update".
     required: false
   version:
     description: Release version identifier. Maps to CLI --release-version (e.g., "v1.2.3").
