@@ -64,7 +64,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
-| `cli_version`   | No       | `v0.9.0` | Linear Release CLI version to install                                                                                                                                                                                         |
+| `cli_version`   | No       | `v0.10.0` | Linear Release CLI version to install                                                                                                                                                                                         |
 
 ## Outputs
 
