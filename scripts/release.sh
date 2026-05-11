@@ -42,7 +42,8 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
 fi
 
 # Up to date with origin/main
-git fetch origin main --tags --quiet
+# --force keeps rolling tags (e.g. v0) in sync with the remote so they don't block the fetch.
+git fetch origin main --tags --force
 LOCAL_SHA=$(git rev-parse main)
 REMOTE_SHA=$(git rev-parse origin/main)
 if [ "$LOCAL_SHA" != "$REMOTE_SHA" ]; then
