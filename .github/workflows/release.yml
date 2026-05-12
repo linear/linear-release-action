@@ -6,6 +6,8 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   release:
     name: Cut release ${{ github.ref_name }}
@@ -14,10 +16,11 @@ jobs:
       contents: write
     steps:
       - name: Checkout tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
 
       - name: Validate tag and resolve major
         id: vars
@@ -34,20 +37,25 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "major=v$MAJOR" >> "$GITHUB_OUTPUT"
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
       - name: Move floating major tag forward
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAJOR: ${{ steps.vars.outputs.major }}
+          TAG: ${{ steps.vars.outputs.tag }}
+          TARGET_SHA: ${{ github.sha }}
         run: |
-          git tag -f "${{ steps.vars.outputs.major }}" "${{ steps.vars.outputs.tag }}"
-          git push origin "${{ steps.vars.outputs.major }}" --force
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/git/refs/tags/${MAJOR}" \
+            -f sha="${TARGET_SHA}" \
+            -F force=true || \
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+            -f ref="refs/tags/${MAJOR}" \
+            -f sha="${TARGET_SHA}"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.vars.outputs.tag }}
         run: |
-          gh release create "${{ steps.vars.outputs.tag }}" \
-            --title "${{ steps.vars.outputs.tag }}" \
+          gh release create "${TAG}" \
+            --title "${TAG}" \
             --generate-notes
