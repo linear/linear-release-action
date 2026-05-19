@@ -49,6 +49,8 @@ jobs:
     name: Sync release management
     needs: [lint, test-install]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     uses: ./.github/workflows/run-linear-release.yml
     with:
       action: sync
