@@ -44,3 +44,13 @@ jobs:
         env:
           CLI_VERSION: latest
           RUNNER_OS: ${{ runner.os }}
+
+  sync-release:
+    name: Sync release management
+    needs: [lint, test-install]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/run-linear-release.yml
+    with:
+      action: sync
+    secrets:
+      LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY: ${{ secrets.LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY }}

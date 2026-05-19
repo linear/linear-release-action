@@ -1,0 +1,78 @@
+name: Run Linear Release
+
+on:
+  workflow_call:
+    inputs:
+      action:
+        description: "Action to perform"
+        required: true
+        type: string
+      name:
+        description: "Release name"
+        required: false
+        type: string
+      version:
+        description: "Release version"
+        required: false
+        type: string
+    secrets:
+      LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY:
+        required: true
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action"
+        required: true
+        type: choice
+        options:
+          - sync
+          - complete
+      name:
+        description: "Release name"
+        required: false
+        type: string
+      version:
+        description: "Release version"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sync issues to release
+    if: inputs.action == 'sync'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sync issues
+        uses: linear/linear-release-action@v0
+        with:
+          access_key: ${{ secrets.LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY }}
+          command: sync
+          name: ${{ inputs.name }}
+          version: ${{ inputs.version }}
+
+  complete:
+    name: Complete release
+    if: inputs.action == 'complete'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Complete release
+        uses: linear/linear-release-action@v0
+        with:
+          access_key: ${{ secrets.LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY }}
+          command: complete
+          name: ${{ inputs.name }}
+          version: ${{ inputs.version }}
