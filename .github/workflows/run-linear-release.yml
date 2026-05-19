@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Sync issues
-        uses: linear/linear-release-action@v0
+        uses: linear/linear-release-action@v0 # zizmor: ignore[unpinned-uses] dogfooding this repo
         with:
           access_key: ${{ secrets.LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY }}
           command: sync
@@ -70,7 +70,7 @@ jobs:
           persist-credentials: false
 
       - name: Complete release
-        uses: linear/linear-release-action@v0
+        uses: linear/linear-release-action@v0 # zizmor: ignore[unpinned-uses] dogfooding this repo
         with:
           access_key: ${{ secrets.LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY }}
           command: complete
