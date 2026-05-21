@@ -65,7 +65,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
-| `cli_version`   | No       | `v0.11.2` | Linear Release CLI version to install                                                                                                                                                                                         |
+| `cli_version`   | No       | `v0.12.0` | Linear Release CLI version to install                                                                                                                                                                                         |
 
 ## Outputs
 

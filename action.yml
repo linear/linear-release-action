@@ -39,9 +39,9 @@ inputs:
     description: Maximum time in seconds to wait for the command to complete. Defaults to 60.
     required: false
   cli_version:
-    description: Linear Release CLI version to install (e.g., "v0.11.2"). Set to "latest" to always use the newest CLI.
+    description: Linear Release CLI version to install (e.g., "v0.12.0"). Set to "latest" to always use the newest CLI.
     required: false
-    default: v0.11.2
+    default: v0.12.0
 
 outputs:
   release-id:
