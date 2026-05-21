@@ -35,6 +35,12 @@ inputs:
   links:
     description: Links to attach to the targeted release. Use one link per line. Each link must be either an absolute URL or "Label=URL".
     required: false
+  documents:
+    description: Documents to attach to the targeted release. One per line as "[Title=]path/to/file.md" (title inferred from the filename if omitted). Existing documents on the release with the same title are updated.
+    required: false
+  release_notes:
+    description: Path to a markdown file used as the release notes for this release.
+    required: false
   log_level:
     description: Log verbosity. Use "quiet" for errors only or "verbose" for detailed progress. Omit for default output.
     required: false
@@ -83,6 +89,8 @@ runs:
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
         INPUT_BASE_REF: ${{ inputs.base_ref }}
         INPUT_LINKS: ${{ inputs.links }}
+        INPUT_DOCUMENTS: ${{ inputs.documents }}
+        INPUT_RELEASE_NOTES: ${{ inputs.release_notes }}
         INPUT_LOG_LEVEL: ${{ inputs.log_level }}
         INPUT_TIMEOUT: ${{ inputs.timeout }}
 

@@ -56,6 +56,13 @@ if [[ -n "${INPUT_LINKS:-}" ]]; then
     args+=("--link=${link}")
   done <<<"${INPUT_LINKS}"
 fi
+if [[ -n "${INPUT_DOCUMENTS:-}" ]]; then
+  while IFS= read -r doc || [[ -n "$doc" ]]; do
+    [[ "$doc" =~ ^[[:space:]]*$ ]] && continue
+    args+=("--document-file=${doc}")
+  done <<<"${INPUT_DOCUMENTS}"
+fi
+[[ -n "${INPUT_RELEASE_NOTES:-}" ]] && args+=("--release-notes-file=${INPUT_RELEASE_NOTES}")
 [[ -n "${INPUT_TIMEOUT:-}" ]] && args+=("--timeout=${INPUT_TIMEOUT}")
 
 if [[ -n "${INPUT_LOG_LEVEL:-}" ]]; then
