@@ -15,6 +15,10 @@ on:
         description: "Release version"
         required: false
         type: string
+      base_ref:
+        description: "Sync scan base ref"
+        required: false
+        type: string
     secrets:
       LINEAR_RELEASE_MANAGEMENT_ACCESS_KEY:
         required: true
@@ -34,6 +38,10 @@ on:
         type: string
       version:
         description: "Release version"
+        required: false
+        type: string
+      base_ref:
+        description: "Sync scan base ref"
         required: false
         type: string
 
@@ -58,6 +66,7 @@ jobs:
           command: sync
           name: ${{ inputs.name }}
           version: ${{ inputs.version }}
+          base_ref: ${{ inputs.base_ref }}
 
   complete:
     name: Complete release

@@ -62,6 +62,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `version`       | No       |          | Release version identifier (alias: `release_version`)                                                                                                                                                                         |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`)                                                                                                                                                    |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
+| `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
 | `cli_version`   | No       | `v0.11.2` | Linear Release CLI version to install                                                                                                                                                                                         |
@@ -150,6 +151,22 @@ Filter commits by file paths to track releases for specific packages, useful for
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     include_paths: apps/web/**,packages/shared/**
 ```
+
+### Scan base override
+
+Use `base_ref` to explicitly choose the exclusive lower bound for `sync`'s commit scan. This is useful when the automatically selected release baseline is not the range you want for a custom branching workflow, first-time onboarding, or migration.
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    base_ref: last-released-ref
+    include_paths: apps/api/**
+```
+
+The base ref is exclusive: Linear Release scans `<base_ref>..HEAD`, matching Git range syntax, and still applies any configured path filters. Pass the last commit, tag, or ref that should be treated as already released, not the first commit you want included.
+
+When `base_ref` is provided, it overrides automatic base selection for that run. After sync, current `HEAD` is stored as the future release baseline. Choosing an older or newer base can reattach or skip commits, so use this only when you intentionally want to own the scan range.
 
 ## Versioning
 

@@ -49,6 +49,7 @@ args=()
 [[ -n "${INPUT_VERSION:-}" ]] && args+=("--release-version=${INPUT_VERSION}")
 [[ -n "${INPUT_STAGE:-}" ]] && args+=("--stage=${INPUT_STAGE}")
 [[ -n "${INPUT_INCLUDE_PATHS:-}" ]] && args+=("--include-paths=${INPUT_INCLUDE_PATHS}")
+[[ -n "${INPUT_BASE_REF:-}" ]] && args+=("--base-ref=${INPUT_BASE_REF}")
 [[ -n "${INPUT_TIMEOUT:-}" ]] && args+=("--timeout=${INPUT_TIMEOUT}")
 
 if [[ -n "${INPUT_LOG_LEVEL:-}" ]]; then
