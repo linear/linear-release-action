@@ -50,6 +50,12 @@ args=()
 [[ -n "${INPUT_STAGE:-}" ]] && args+=("--stage=${INPUT_STAGE}")
 [[ -n "${INPUT_INCLUDE_PATHS:-}" ]] && args+=("--include-paths=${INPUT_INCLUDE_PATHS}")
 [[ -n "${INPUT_BASE_REF:-}" ]] && args+=("--base-ref=${INPUT_BASE_REF}")
+if [[ -n "${INPUT_LINKS:-}" ]]; then
+  while IFS= read -r link || [[ -n "$link" ]]; do
+    [[ "$link" =~ ^[[:space:]]*$ ]] && continue
+    args+=("--link=${link}")
+  done <<<"${INPUT_LINKS}"
+fi
 [[ -n "${INPUT_TIMEOUT:-}" ]] && args+=("--timeout=${INPUT_TIMEOUT}")
 
 if [[ -n "${INPUT_LOG_LEVEL:-}" ]]; then

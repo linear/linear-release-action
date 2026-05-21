@@ -63,6 +63,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`)                                                                                                                                                    |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
 | `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
+| `links`         | No       |          | Links to attach to the targeted release, one per line. Each value must be either an absolute URL or `Label=URL`.                                                                                                              |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
 | `cli_version`   | No       | `v0.12.0` | Linear Release CLI version to install                                                                                                                                                                                         |
@@ -167,6 +168,19 @@ Use `base_ref` to explicitly choose the exclusive lower bound for `sync`'s commi
 The base ref is exclusive: Linear Release scans `<base_ref>..HEAD`, matching Git range syntax, and still applies any configured path filters. Pass the last commit, tag, or ref that should be treated as already released, not the first commit you want included.
 
 When `base_ref` is provided, it overrides automatic base selection for that run. After sync, current `HEAD` is stored as the future release baseline. Choosing an older or newer base can reattach or skip commits, so use this only when you intentionally want to own the scan range.
+
+### Release links
+
+`links` attaches external URLs to the release — a GitHub release page, a CI run, a deployment dashboard. One link per line, as either an absolute URL or `Label=URL`. When the label is omitted, Linear derives it from the URL (e.g. `https://github.com/...` → "GitHub").
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    links: |
+      https://github.com/acme/app/releases/tag/v1.2.0
+      Deploy dashboard=https://deploys.example.com/v1.2.0
+```
 
 ## Versioning
 

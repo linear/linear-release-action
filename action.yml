@@ -32,6 +32,9 @@ inputs:
   base_ref:
     description: "Override the sync scan base. Exclusive: scans <base_ref>..HEAD."
     required: false
+  links:
+    description: Links to attach to the targeted release. Use one link per line. Each link must be either an absolute URL or "Label=URL".
+    required: false
   log_level:
     description: Log verbosity. Use "quiet" for errors only or "verbose" for detailed progress. Omit for default output.
     required: false
@@ -79,6 +82,7 @@ runs:
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
         INPUT_BASE_REF: ${{ inputs.base_ref }}
+        INPUT_LINKS: ${{ inputs.links }}
         INPUT_LOG_LEVEL: ${{ inputs.log_level }}
         INPUT_TIMEOUT: ${{ inputs.timeout }}
 
