@@ -62,6 +62,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `version`       | No       |          | Release version identifier (alias: `release_version`)                                                                                                                                                                         |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`)                                                                                                                                                    |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
+| `include_subjects` | No    |          | Filter commits whose subject (first line) matches a regex (e.g., `[A-Z]{2,}-[0-9]+`)                                                                                                                                          |
 | `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
 | `links`         | No       |          | Links to attach to the targeted release, one per line. Each value must be either an absolute URL or `Label=URL`.                                                                                                              |
 | `documents`     | No       |          | Documents to attach to the targeted release, one per line as `[Title=]path/to/file.md` (title inferred from the filename if omitted). Existing documents with the same title are updated.                                       |
@@ -153,6 +154,17 @@ Filter commits by file paths to track releases for specific packages, useful for
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     include_paths: apps/web/**,packages/shared/**
+```
+
+### Subject filtering
+
+Filter commits whose subject (first line) matches a regex — useful for dropping noise like bot commits or direct pushes without an issue reference. The regex is matched against the inner subject of revert commits, so revert tracking still works.
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    include_subjects: "[A-Z]{2,}-[0-9]+"
 ```
 
 ### Scan base override
