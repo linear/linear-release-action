@@ -29,6 +29,9 @@ inputs:
   include_paths:
     description: Filter commits by file paths using comma-separated globs (e.g., "apps/web/**,packages/**"). Useful for monorepos.
     required: false
+  include_subjects:
+    description: Filter commits whose subject (first line) matches a regular expression (e.g., "[A-Z]{2,}-[0-9]+"). Composes with include_paths.
+    required: false
   base_ref:
     description: "Override the sync scan base. Exclusive: scans <base_ref>..HEAD."
     required: false
@@ -41,6 +44,10 @@ inputs:
   release_notes:
     description: Path to a markdown file used as the release notes for this release.
     required: false
+  dry_run:
+    description: 'When "true", scan commits and call read-only Linear APIs but skip the create/update mutations. Logs the action that would have been taken; no release is created or modified.'
+    required: false
+    default: "false"
   log_level:
     description: Log verbosity. Use "quiet" for errors only or "verbose" for detailed progress. Omit for default output.
     required: false
@@ -87,10 +94,12 @@ runs:
         INPUT_RELEASE_VERSION: ${{ inputs.release_version }}
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
+        INPUT_INCLUDE_SUBJECTS: ${{ inputs.include_subjects }}
         INPUT_BASE_REF: ${{ inputs.base_ref }}
         INPUT_LINKS: ${{ inputs.links }}
         INPUT_DOCUMENTS: ${{ inputs.documents }}
         INPUT_RELEASE_NOTES: ${{ inputs.release_notes }}
+        INPUT_DRY_RUN: ${{ inputs.dry_run }}
         INPUT_LOG_LEVEL: ${{ inputs.log_level }}
         INPUT_TIMEOUT: ${{ inputs.timeout }}
 
