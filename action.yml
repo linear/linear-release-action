@@ -58,6 +58,10 @@ inputs:
     description: Linear Release CLI version to install (e.g., "v0.14.0"). Set to "latest" to always use the newest CLI.
     required: false
     default: v0.14.0
+  github_token:
+    description: GitHub token used to authenticate release downloads through the GitHub CLI. Defaults to the workflow's automatic token. Pass a personal access token or GitHub App token when downloading from another repository or when you need higher rate limits than the default token provides.
+    required: false
+    default: ${{ github.token }}
 
 outputs:
   release-id:
@@ -81,6 +85,7 @@ runs:
       run: bash "${{ github.action_path }}/install.sh"
       env:
         CLI_VERSION: ${{ inputs.cli_version }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
 
     - name: Run Linear Release
       id: run

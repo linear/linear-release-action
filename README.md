@@ -71,6 +71,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
 | `cli_version`   | No       | `v0.14.0` | Linear Release CLI version to install                                                                                                                                                                                         |
+| `github_token`  | No       | `${{ github.token }}` | GitHub token used to authenticate the CLI download. Authenticating avoids the low anonymous rate limit that can fail on busy or shared runners. Defaults to the workflow's automatic token; pass your own token to use a higher rate limit. |
 
 ## Outputs
 
