@@ -27,6 +27,12 @@ For example:
 
 The version must follow `MAJOR.MINOR.PATCH` format (e.g., `0.10.0`, `1.0.0`).
 
+By default the script sets the `cli_version` default to match the action version. When the two have drifted — for example, an action-only release while the CLI stays behind — pass the CLI version explicitly:
+
+```bash
+./scripts/release.sh 0.14.4 --cli-version 0.14.1
+```
+
 ## What happens
 
 The release script (`scripts/release.sh`) and CI workflows handle the full process:
@@ -68,4 +74,4 @@ The Release workflow then:
 
 - Consumers reference this action as `linear/linear-release-action@v0` (the floating major tag), so the major-tag move is the load-bearing step. Without it, consumers stay on whichever commit the major tag previously pointed to.
 - The source of truth for the action's version is [`VERSION`](./VERSION); the auto-tag workflow fails if the branch name and `VERSION` file disagree.
-- The script bumps the `cli_version` default to match the action version. If you need a release where these diverge, edit the release branch by hand before merging the PR — the auto-tag workflow validates the `VERSION` file, not `cli_version`.
+- The script bumps the `cli_version` default to match the action version unless you pass `--cli-version`. The auto-tag workflow validates the `VERSION` file, not `cli_version`, so the two are free to diverge.
