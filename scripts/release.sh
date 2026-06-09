@@ -1,18 +1,66 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="${1:-}"
+usage() {
+  echo "Usage: $0 <version> [--cli-version <version>]"
+  echo "Example: $0 0.10.0"
+  echo "Example: $0 0.14.4 --cli-version 0.14.1   # action and CLI versions drift"
+}
+
+validate_version() {
+  echo "$1" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+}
+
+VERSION=""
+CLI_VERSION=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --cli-version|--cli)
+      if [ $# -lt 2 ]; then echo "Error: $1 requires a value"; usage; exit 1; fi
+      CLI_VERSION="${2#v}"
+      shift 2
+      ;;
+    --cli-version=*|--cli=*)
+      CLI_VERSION="${1#*=}"
+      CLI_VERSION="${CLI_VERSION#v}"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Error: Unknown flag '$1'"
+      usage
+      exit 1
+      ;;
+    *)
+      if [ -n "$VERSION" ]; then echo "Error: Unexpected argument '$1'"; usage; exit 1; fi
+      VERSION="${1#v}"
+      shift
+      ;;
+  esac
+done
 
 # --- Usage ---
 if [ -z "$VERSION" ]; then
-  echo "Usage: $0 <version>"
-  echo "Example: $0 0.10.0"
+  usage
   exit 1
 fi
 
-# --- Validate version format ---
-if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+# The CLI default tracks the action version unless an explicit drift is requested.
+if [ -z "$CLI_VERSION" ]; then
+  CLI_VERSION="$VERSION"
+fi
+
+# --- Validate version formats ---
+if ! validate_version "$VERSION"; then
   echo "Error: Invalid version format '$VERSION'. Expected MAJOR.MINOR.PATCH (e.g., 0.10.0)"
+  exit 1
+fi
+if ! validate_version "$CLI_VERSION"; then
+  echo "Error: Invalid CLI version format '$CLI_VERSION'. Expected MAJOR.MINOR.PATCH (e.g., 0.10.0)"
   exit 1
 fi
 
@@ -75,13 +123,13 @@ git checkout -b "$BRANCH"
 echo "Updating VERSION to $VERSION..."
 echo "$VERSION" > VERSION
 
-echo "Updating cli_version default in action.yml..."
-sed -i.bak -E "s/^(    default: v)[0-9]+\.[0-9]+\.[0-9]+\$/\1$VERSION/" action.yml
-sed -i.bak -E "s/(Linear Release CLI version to install \(e\.g\., \"v)[0-9]+\.[0-9]+\.[0-9]+(\"\))/\1$VERSION\2/" action.yml
+echo "Updating cli_version default in action.yml to v$CLI_VERSION..."
+sed -i.bak -E "s/^(    default: v)[0-9]+\.[0-9]+\.[0-9]+\$/\1$CLI_VERSION/" action.yml
+sed -i.bak -E "s/(Linear Release CLI version to install \(e\.g\., \"v)[0-9]+\.[0-9]+\.[0-9]+(\"\))/\1$CLI_VERSION\2/" action.yml
 rm action.yml.bak
 
-echo "Updating cli_version reference in README.md..."
-sed -i.bak -E "s/(\`v)[0-9]+\.[0-9]+\.[0-9]+(\` \| Linear Release CLI)/\1$VERSION\2/" README.md
+echo "Updating cli_version reference in README.md to v$CLI_VERSION..."
+sed -i.bak -E "s/(\`v)[0-9]+\.[0-9]+\.[0-9]+(\` \| Linear Release CLI)/\1$CLI_VERSION\2/" README.md
 rm README.md.bak
 
 git add VERSION action.yml README.md
@@ -92,9 +140,14 @@ echo "Pushing branch..."
 git push -u origin "$BRANCH"
 
 echo "Creating pull request..."
+if [ "$CLI_VERSION" = "$VERSION" ]; then
+  PR_BODY="Bumps the action and default CLI version to v$VERSION."
+else
+  PR_BODY="Bumps the action to v$VERSION (default CLI version stays at v$CLI_VERSION)."
+fi
 PR_URL=$(gh pr create \
   --title "Release v$VERSION" \
-  --body "Bumps the action and default CLI version to v$VERSION.
+  --body "$PR_BODY
 
 After this PR is merged, the \`v$VERSION\` tag will be created automatically, triggering the [Release workflow](./.github/workflows/release.yml)." \
   --base main)
