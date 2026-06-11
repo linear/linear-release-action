@@ -55,9 +55,9 @@ inputs:
     description: Maximum time in seconds to wait for the command to complete. Defaults to 60.
     required: false
   cli_version:
-    description: Linear Release CLI version to install (e.g., "v0.14.1"). Set to "latest" to always use the newest CLI.
+    description: Linear Release CLI version to install (e.g., "v0.14.2"). Set to "latest" to always use the newest CLI.
     required: false
-    default: v0.14.1
+    default: v0.14.2
   github_token:
     description: GitHub token used to authenticate release downloads through the GitHub CLI. Defaults to the workflow's automatic token. Pass a personal access token or GitHub App token when downloading from another repository or when you need higher rate limits than the default token provides.
     required: false
