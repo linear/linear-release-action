@@ -70,7 +70,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `dry_run`       | No       | `false`  | When `true`, scan commits and call read-only Linear APIs but skip the create/update mutations. Logs the action that would have been taken; no release is created or modified.                                                  |
 | `log_level`     | No       |          | Log verbosity: `quiet` or `verbose`. Omit for default output.                                                                                                                                                                 |
 | `timeout`       | No       | `60`     | Maximum time in seconds to wait for the command to complete                                                                                                                                                                   |
-| `cli_version`   | No       | `v0.14.2` | Linear Release CLI version to install                                                                                                                                                                                         |
+| `cli_version`   | No       | `v0.14.3` | Linear Release CLI version to install                                                                                                                                                                                         |
 | `github_token`  | No       | `${{ github.token }}` | GitHub token used to authenticate the CLI download. Authenticating avoids the low anonymous rate limit that can fail on busy or shared runners. Defaults to the workflow's automatic token; pass your own token to use a higher rate limit. |
 
 ## Outputs
