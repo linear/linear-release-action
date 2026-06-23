@@ -123,6 +123,8 @@ git checkout -b "$BRANCH"
 echo "Updating VERSION to $VERSION..."
 echo "$VERSION" > VERSION
 
+PREV_CLI_VERSION=$(grep -E '^    default: v[0-9]+\.[0-9]+\.[0-9]+$' action.yml | sed -E 's/.*default: v//')
+
 echo "Updating cli_version default in action.yml to v$CLI_VERSION..."
 sed -i.bak -E "s/^(    default: v)[0-9]+\.[0-9]+\.[0-9]+\$/\1$CLI_VERSION/" action.yml
 sed -i.bak -E "s/(Linear Release CLI version to install \(e\.g\., \"v)[0-9]+\.[0-9]+\.[0-9]+(\"\))/\1$CLI_VERSION\2/" action.yml
@@ -142,8 +144,10 @@ git push -u origin "$BRANCH"
 echo "Creating pull request..."
 if [ "$CLI_VERSION" = "$VERSION" ]; then
   PR_BODY="Bumps the action and default CLI version to v$VERSION."
-else
+elif [ "$CLI_VERSION" = "$PREV_CLI_VERSION" ]; then
   PR_BODY="Bumps the action to v$VERSION (default CLI version stays at v$CLI_VERSION)."
+else
+  PR_BODY="Bumps the action to v$VERSION (default CLI version bumped to v$CLI_VERSION)."
 fi
 PR_URL=$(gh pr create \
   --title "Release v$VERSION" \
