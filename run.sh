@@ -50,6 +50,7 @@ args=()
 [[ -n "${INPUT_STAGE:-}" ]] && args+=("--stage=${INPUT_STAGE}")
 [[ -n "${INPUT_INCLUDE_PATHS:-}" ]] && args+=("--include-paths=${INPUT_INCLUDE_PATHS}")
 [[ -n "${INPUT_INCLUDE_SUBJECTS:-}" ]] && args+=("--include-subjects=${INPUT_INCLUDE_SUBJECTS}")
+[[ -n "${INPUT_ISSUE_PATTERN:-}" ]] && args+=("--issue-pattern=${INPUT_ISSUE_PATTERN}")
 [[ -n "${INPUT_BASE_REF:-}" ]] && args+=("--base-ref=${INPUT_BASE_REF}")
 if [[ -n "${INPUT_LINKS:-}" ]]; then
   while IFS= read -r link || [[ -n "$link" ]]; do

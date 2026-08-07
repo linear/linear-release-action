@@ -32,6 +32,9 @@ inputs:
   include_subjects:
     description: Filter commits whose subject (first line) matches a regular expression (e.g., "[A-Z]{2,}-[0-9]+"). Composes with include_paths.
     required: false
+  issue_pattern:
+    description: 'Extract issue identifiers from commit subjects using a custom regular expression with the identifier in capture group 1 (e.g. "\[([A-Z]+-\d+)\]"). Additive to the built-in detection.'
+    required: false
   base_ref:
     description: "Override the sync scan base. Exclusive: scans <base_ref>..HEAD."
     required: false
@@ -100,6 +103,7 @@ runs:
         INPUT_STAGE: ${{ inputs.stage }}
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
         INPUT_INCLUDE_SUBJECTS: ${{ inputs.include_subjects }}
+        INPUT_ISSUE_PATTERN: ${{ inputs.issue_pattern }}
         INPUT_BASE_REF: ${{ inputs.base_ref }}
         INPUT_LINKS: ${{ inputs.links }}
         INPUT_DOCUMENTS: ${{ inputs.documents }}
