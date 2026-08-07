@@ -63,6 +63,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`)                                                                                                                                                    |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
 | `include_subjects` | No    |          | Filter commits whose subject (first line) matches a regular expression. Composes with `include_paths`.                                                                                                                        |
+| `issue_pattern` | No       |          | Extract issue identifiers captured by group 1 of a regular expression from commit subjects. Additive to the built-in detection.                                                                                                |
 | `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
 | `links`         | No       |          | Links to attach to the targeted release, one per line. Each value must be either an absolute URL or `Label=URL`.                                                                                                              |
 | `documents`     | No       |          | Documents to attach to the targeted release, one per line as `[Title=]path/to/file.md` (title inferred from the filename if omitted). Existing documents with the same title are updated.                                       |
@@ -167,6 +168,17 @@ Use `include_subjects` to only scan commits whose subject (first line) matches a
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     include_subjects: "[A-Z]{2,}-[0-9]+"
+```
+
+### Custom issue patterns
+
+Use `issue_pattern` when commit subjects reference issues in a convention the built-in detection doesn't cover. The regex is matched case-insensitively anywhere in the subject (first line), with the identifier in capture group 1. Additive to the built-in branch-name, magic-word, and subject-pattern detection.
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    issue_pattern: '\[([A-Z]+-\d+)\]'
 ```
 
 ### Scan base override
