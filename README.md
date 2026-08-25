@@ -246,6 +246,8 @@ Set `dry_run: true` to preview what the action would do without touching Linear.
 
 Each release of this action defaults to a specific [Linear Release CLI](https://github.com/linear/linear-release) version. Pinning the action — whether by tag (`@v0`) or commit SHA — also pins the CLI. Set `cli_version` to override.
 
+CLI releases through `v0.16.0` predate artifact verification and remain available through a legacy compatibility path. For newer releases, the action requires an immutable GitHub release and verifies the downloaded executable against the release's `checksums.txt` before making it executable. Missing, malformed, or mismatched integrity metadata causes installation to fail.
+
 ## Troubleshooting
 
 **"Unsupported OS" or "Unsupported arch" error**
