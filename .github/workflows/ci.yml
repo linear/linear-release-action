@@ -47,6 +47,7 @@ jobs:
         env:
           CLI_VERSION: latest
           RUNNER_OS: ${{ runner.os }}
+          GITHUB_TOKEN: ${{ github.token }}
 
   sync-release:
     name: Sync release management
