@@ -18,7 +18,10 @@ jobs:
           persist-credentials: false
 
       - name: Lint shell scripts
-        run: shellcheck install.sh run.sh
+        run: shellcheck install.sh run.sh tests/install.test.sh tests/mocks/*
+
+      - name: Test installer verification
+        run: bash tests/install.test.sh
 
       - name: Validate action.yml
         run: |

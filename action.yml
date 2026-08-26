@@ -62,7 +62,7 @@ inputs:
     required: false
     default: v0.16.0
   github_token:
-    description: GitHub token used to authenticate release downloads through the GitHub CLI. Defaults to the workflow's automatic token. Pass a personal access token or GitHub App token when downloading from another repository or when you need higher rate limits than the default token provides.
+    description: GitHub token used to authenticate release metadata and downloads. Defaults to the workflow's automatic token, which avoids the lower anonymous API rate limit.
     required: false
     default: ${{ github.token }}
 
