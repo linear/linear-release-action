@@ -142,11 +142,13 @@ Updates the deployment stage of the current release. Only applicable to schedule
 
 | Command    | With `version`                                   | Without `version`                                                                                                        |
 | ---------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| `sync`     | Targets matching version or creates that version | Continuous pipelines create a release with short SHA name/version. Scheduled pipelines use current started/planned flow. |
+| `sync`     | Uses the release with that version. For scheduled pipelines, if the current release has no version, assigns the version to it; otherwise creates a release. | Continuous pipelines create a release with short SHA name/version. Scheduled pipelines use current started/planned flow. |
 | `update`   | Updates that exact release version               | Updates latest started release, or latest planned release if no started release exists                                   |
 | `complete` | Completes that exact release version             | Completes latest started release                                                                                         |
 
 For scheduled pipelines, prefer always passing `version` in CI, especially when releases overlap.
+
+If the version is only known when you publish, run `sync` again with the version, then run `complete` with the same version. The second `sync` sets the version on the existing release; `complete` can only mark a release complete if that version is already set.
 
 ### Path filtering
 
