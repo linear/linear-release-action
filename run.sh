@@ -67,6 +67,15 @@ fi
 [[ -n "${INPUT_RELEASE_NOTES:-}" ]] && args+=("--release-notes-file=${INPUT_RELEASE_NOTES}")
 [[ -n "${INPUT_TIMEOUT:-}" ]] && args+=("--timeout=${INPUT_TIMEOUT}")
 
+case "${INPUT_NO_BRANCH_REF_DETECTION:-false}" in
+  true)        args+=("--no-branch-ref-detection") ;;
+  false|"")    ;;
+  *)
+    echo "::error::Invalid no_branch_ref_detection '${INPUT_NO_BRANCH_REF_DETECTION}'. Must be: true or false"
+    exit 1
+    ;;
+esac
+
 case "${INPUT_DRY_RUN:-false}" in
   true)        args+=("--dry-run") ;;
   false|"")    ;;

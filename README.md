@@ -64,6 +64,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
 | `include_subjects` | No    |          | Filter commits whose subject (first line) matches a regular expression. Composes with `include_paths`.                                                                                                                        |
 | `issue_pattern` | No       |          | Extract issue identifiers captured by group 1 of a regular expression from commit subjects. Additive to the built-in detection.                                                                                                |
+| `no_branch_ref_detection` | No | `false` | Disable issue detection from git branch refs during `sync`. Maps to CLI `--no-branch-ref-detection`. |
 | `base_ref`      | No       |          | Override the `sync` scan base. Exclusive: scans `<base_ref>..HEAD`                                                                                                                                                            |
 | `links`         | No       |          | Links to attach to the targeted release, one per line. Each value must be either an absolute URL or `Label=URL`.                                                                                                              |
 | `documents`     | No       |          | Documents to attach to the targeted release, one per line as `[Title=]path/to/file.md` (title inferred from the filename if omitted). Existing documents with the same title are updated.                                       |
@@ -181,6 +182,19 @@ Use `issue_pattern` when commit subjects reference issues in a convention the bu
   with:
     access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
     issue_pattern: '\[([A-Z]+-\d+)\]'
+```
+
+### Disable branch ref detection
+
+Set `no_branch_ref_detection: true` for `sync` to ignore git branch refs when detecting issues. This prevents an unrelated branch that points at a released commit from contributing its issue identifier.
+
+Commit-message issue detection, source branches recorded in merge messages, PR/MR references, and custom `issue_pattern` matching remain enabled. This also disables legitimate issue attribution that relies only on branch refs, such as fast-forward commits with no issue reference in their messages. The default is `false`.
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    no_branch_ref_detection: true
 ```
 
 ### Scan base override

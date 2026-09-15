@@ -35,6 +35,10 @@ inputs:
   issue_pattern:
     description: 'Extract issue identifiers captured by group 1 of a regular expression from commit subjects (e.g., "\[([A-Z]+-\d+)\]"). Additive to the built-in detection.'
     required: false
+  no_branch_ref_detection:
+    description: 'When "true", disable issue detection from git branch refs during sync. Commit-message detection, including source branches in merge messages, remains enabled.'
+    required: false
+    default: "false"
   base_ref:
     description: "Override the sync scan base. Exclusive: scans <base_ref>..HEAD."
     required: false
@@ -104,6 +108,7 @@ runs:
         INPUT_INCLUDE_PATHS: ${{ inputs.include_paths }}
         INPUT_INCLUDE_SUBJECTS: ${{ inputs.include_subjects }}
         INPUT_ISSUE_PATTERN: ${{ inputs.issue_pattern }}
+        INPUT_NO_BRANCH_REF_DETECTION: ${{ inputs.no_branch_ref_detection }}
         INPUT_BASE_REF: ${{ inputs.base_ref }}
         INPUT_LINKS: ${{ inputs.links }}
         INPUT_DOCUMENTS: ${{ inputs.documents }}
