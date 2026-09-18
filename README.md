@@ -59,6 +59,7 @@ Once installed, run it from your AI agent with `/linear-release-setup` (or just 
 | `access_key`    | Yes      |          | Linear pipeline access key for authentication                                                                                                                                                                                 |
 | `command`       | No       | `sync`   | Command to run: `sync`, `complete`, or `update`                                                                                                                                                                               |
 | `name`          | No       |          | Custom release name. For `sync`, the value is applied to the targeted release — both newly created releases and existing ones get the provided name. For `complete` and `update`, sets the name on the targeted release.                                          |
+| `description`   | No       |          | Release description for `sync`, `complete`, and `update`. Supports multiline text. Forwarded as CLI `--description` only when non-empty. |
 | `version`       | No       |          | Release version identifier (alias: `release_version`)                                                                                                                                                                         |
 | `stage`         | No       |          | Deployment stage such as `staging` or `production` (required for `update`)                                                                                                                                                    |
 | `include_paths` | No       |          | Filter commits by file paths (comma-separated globs for monorepos)                                                                                                                                                            |
@@ -212,6 +213,20 @@ Use `base_ref` to explicitly choose the exclusive lower bound for `sync`'s commi
 The base ref is exclusive: Linear Release scans `<base_ref>..HEAD`, matching Git range syntax, and still applies any configured path filters. Pass the last commit, tag, or ref that should be treated as already released, not the first commit you want included.
 
 When `base_ref` is provided, it overrides automatic base selection for that run. After sync, current `HEAD` is stored as the future release baseline. Choosing an older or newer base can reattach or skip commits, so use this only when you intentionally want to own the scan range.
+
+### Release description
+
+Use `description` to set the targeted release's description with `sync`, `complete`, or `update`. Empty or omitted values are not forwarded to the CLI. Use a YAML block scalar for multiline text:
+
+```yaml
+- uses: linear/linear-release-action@v0
+  with:
+    access_key: ${{ secrets.LINEAR_ACCESS_KEY }}
+    description: |
+      Release highlights:
+      - Improved deployment tracking
+      - Fixed release notifications
+```
 
 ### Release links
 
