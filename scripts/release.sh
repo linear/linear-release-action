@@ -116,6 +116,41 @@ if git ls-remote --exit-code --heads origin "$BRANCH" &>/dev/null; then
   exit 1
 fi
 
+# --- Pin CLI checksums ---
+CHECKSUMS_FILE="cli-checksums.txt"
+CLI_ASSETS=(linear-release-linux-x64 linear-release-linux-arm64 linear-release-darwin-arm64 linear-release-darwin-x64)
+
+pin_cli_checksums() {
+  local tag="v$CLI_VERSION"
+  if grep -q "^$tag " "$CHECKSUMS_FILE"; then
+    echo "Checksums for CLI $tag already pinned."
+    return
+  fi
+
+  echo "Pinning checksums for CLI $tag..."
+  local immutable
+  immutable=$(gh api "repos/linear/linear-release/releases/tags/$tag" --jq '.immutable')
+  if [ "$immutable" != "true" ]; then
+    echo "Error: CLI release $tag is not immutable."
+    exit 1
+  fi
+
+  local checksums asset matches hash lines=""
+  checksums=$(gh release download -R linear/linear-release "$tag" -p checksums.txt -O -)
+  for asset in "${CLI_ASSETS[@]}"; do
+    matches=$(awk -v asset="$asset" '$2 == asset {print $1}' <<<"$checksums")
+    hash=$(tr '[:upper:]' '[:lower:]' <<<"$matches")
+    if [ "$(grep -c . <<<"$hash")" -ne 1 ] || ! echo "$hash" | grep -qE '^[0-9a-f]{64}$'; then
+      echo "Error: Expected exactly one SHA-256 entry for '$asset' in $tag checksums.txt."
+      exit 1
+    fi
+    lines+="$tag $hash $asset"$'\n'
+  done
+  printf '%s' "$lines" >> "$CHECKSUMS_FILE"
+}
+
+pin_cli_checksums
+
 # --- Create release branch and bump versions ---
 echo "Creating branch '$BRANCH'..."
 git checkout -b "$BRANCH"
@@ -134,7 +169,7 @@ echo "Updating cli_version reference in README.md to v$CLI_VERSION..."
 sed -i.bak -E "s/(\`v)[0-9]+\.[0-9]+\.[0-9]+(\` \| Linear Release CLI)/\1$CLI_VERSION\2/" README.md
 rm README.md.bak
 
-git add VERSION action.yml README.md
+git add VERSION action.yml README.md "$CHECKSUMS_FILE"
 git commit -m "Release v$VERSION"
 
 # --- Push and create PR ---
