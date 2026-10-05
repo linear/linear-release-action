@@ -46,7 +46,7 @@ The script runs preflight checks and then:
 3. Verifies the working tree is clean, you're on `main`, and it's up to date with `origin/main`
 4. Ensures the `v<version>` tag and `release/<version>` branch don't already exist
 5. Creates a `release/<version>` branch
-6. Bumps the version in [`VERSION`](./VERSION), the `cli_version` default in [`action.yml`](./action.yml), and the inputs table in [`README.md`](./README.md)
+6. Pins the CLI release's SHA-256 checksums in [`cli-checksums.txt`](./cli-checksums.txt) (the release must be immutable), then bumps the version in [`VERSION`](./VERSION), the `cli_version` default in [`action.yml`](./action.yml), and the inputs table in [`README.md`](./README.md)
 7. Commits the change and pushes the branch
 8. Opens a PR against `main` via `gh pr create`
 

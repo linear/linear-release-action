@@ -6,6 +6,7 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ACTION_PATH="${GITHUB_ACTION_PATH:-$(pwd)}"
 BIN_PATH="${ACTION_PATH}/linear-release"
 LEGACY_VERSIONS_PATH="${SCRIPT_PATH}/legacy-versions.txt"
+CHECKSUMS_FILE_PATH="${SCRIPT_PATH}/cli-checksums.txt"
 RELEASES_API="https://api.github.com/repos/linear/linear-release/releases"
 
 error() {
@@ -90,6 +91,11 @@ if [[ ! -f "$LEGACY_VERSIONS_PATH" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$CHECKSUMS_FILE_PATH" ]]; then
+  error "CLI checksum metadata not found at $CHECKSUMS_FILE_PATH."
+  exit 1
+fi
+
 RELEASE_JSON=""
 RESOLVED_VERSION="$CLI_VERSION"
 if [[ "$CLI_VERSION" == "latest" ]]; then
@@ -102,9 +108,24 @@ if [[ "$CLI_VERSION" == "latest" ]]; then
   echo "Resolved latest Linear Release CLI to $RESOLVED_VERSION"
 fi
 
-VERIFY_RELEASE=false
-if ! is_legacy_version "$RESOLVED_VERSION"; then
-  VERIFY_RELEASE=true
+EXPECTED_SHA256=""
+CHECKSUMS_URL=""
+VERIFY_SOURCE=""
+COMMITTED_COUNT=$(awk -v tag="$RESOLVED_VERSION" -v asset="$ASSET" '$1 == tag && $3 == asset {count++} END {print count + 0}' "$CHECKSUMS_FILE_PATH")
+if [[ "$COMMITTED_COUNT" -gt 1 ]]; then
+  error "Expected at most one committed checksum for '$ASSET' in $RESOLVED_VERSION, found $COMMITTED_COUNT."
+  exit 1
+fi
+
+if [[ "$COMMITTED_COUNT" -eq 1 ]]; then
+  EXPECTED_SHA256=$(awk -v tag="$RESOLVED_VERSION" -v asset="$ASSET" '$1 == tag && $3 == asset {print $2}' "$CHECKSUMS_FILE_PATH")
+  if [[ ! "$EXPECTED_SHA256" =~ ^[[:xdigit:]]{64}$ ]]; then
+    error "Malformed committed SHA-256 checksum for '$ASSET'."
+    exit 1
+  fi
+  VERIFY_SOURCE="committed checksums for $RESOLVED_VERSION"
+  URL="https://github.com/linear/linear-release/releases/download/$RESOLVED_VERSION/$ASSET"
+elif ! is_legacy_version "$RESOLVED_VERSION"; then
   if ! command -v jq &>/dev/null; then
     error "jq is required to verify CLI release $RESOLVED_VERSION."
     exit 1
@@ -127,6 +148,7 @@ if ! is_legacy_version "$RESOLVED_VERSION"; then
 
   URL=$(release_asset_url "$RELEASE_JSON" "$ASSET")
   CHECKSUMS_URL=$(release_asset_url "$RELEASE_JSON" "checksums.txt")
+  VERIFY_SOURCE="immutable release $RESOLVED_VERSION"
 else
   URL="https://github.com/linear/linear-release/releases/download/$RESOLVED_VERSION/$ASSET"
   echo "::notice::CLI release $RESOLVED_VERSION predates artifact verification; continuing with the legacy installation path."
@@ -147,7 +169,7 @@ DOWNLOADED_BIN="${TEMP_DIR}/${ASSET}"
 
 curl "${curl_args[@]}" "$URL" -o "$DOWNLOADED_BIN"
 
-if [[ "$VERIFY_RELEASE" == "true" ]]; then
+if [[ -n "$CHECKSUMS_URL" ]]; then
   CHECKSUMS_PATH="${TEMP_DIR}/checksums.txt"
   curl "${curl_args[@]}" "$CHECKSUMS_URL" -o "$CHECKSUMS_PATH"
 
@@ -162,13 +184,16 @@ if [[ "$VERIFY_RELEASE" == "true" ]]; then
     error "Malformed SHA-256 checksum for '$ASSET'."
     exit 1
   fi
+fi
+
+if [[ -n "$EXPECTED_SHA256" ]]; then
   EXPECTED_SHA256=$(tr '[:upper:]' '[:lower:]' <<<"$EXPECTED_SHA256")
   ACTUAL_SHA256=$(sha256 "$DOWNLOADED_BIN")
   if [[ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]]; then
     error "SHA-256 checksum mismatch for '$ASSET'."
     exit 1
   fi
-  echo "Verified SHA-256 checksum for $ASSET from immutable release $RESOLVED_VERSION"
+  echo "Verified SHA-256 checksum for $ASSET from $VERIFY_SOURCE"
 fi
 
 chmod +x "$DOWNLOADED_BIN"

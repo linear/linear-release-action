@@ -11,6 +11,7 @@ chmod +x "$MOCK_PATH/curl" "$MOCK_PATH/chmod" "$MOCK_PATH/uname"
 
 LAST_STATUS=0
 CASE_DIR=""
+INSTALL_DIR=""
 OUTPUT_DIR=""
 MOCK_RELEASE_JSON=""
 MOCK_BINARY=""
@@ -34,7 +35,10 @@ new_case() {
   MOCK_CHECKSUMS="${CASE_DIR}/checksums.txt"
   MOCK_CURL_LOG="${CASE_DIR}/curl.log"
   MOCK_CHMOD_LOG="${CASE_DIR}/chmod.log"
-  mkdir -p "$OUTPUT_DIR"
+  INSTALL_DIR="${CASE_DIR}/install"
+  mkdir -p "$OUTPUT_DIR" "$INSTALL_DIR"
+  cp "$REPO_ROOT/install.sh" "$REPO_ROOT/legacy-versions.txt" "$INSTALL_DIR/"
+  : >"${INSTALL_DIR}/cli-checksums.txt"
   : >"$MOCK_CURL_LOG"
   : >"$MOCK_CHMOD_LOG"
 }
@@ -70,7 +74,7 @@ invoke_installer() {
     MOCK_CURL_LOG="$MOCK_CURL_LOG" \
     MOCK_CHMOD_LOG="$MOCK_CHMOD_LOG" \
     REAL_CHMOD="$REAL_CHMOD" \
-    bash "$REPO_ROOT/install.sh" >"${CASE_DIR}/output.log" 2>&1
+    bash "$INSTALL_DIR/install.sh" >"${CASE_DIR}/output.log" 2>&1
   LAST_STATUS=$?
   set -e
 }
@@ -154,6 +158,32 @@ test_tampered_release() {
   assert_not_installed
 }
 
+test_committed_checksum() {
+  new_case "committed-checksum"
+  printf 'committed-binary\n' >"$MOCK_BINARY"
+  printf 'v0.18.0 %s linear-release-linux-x64\n' "$(sha256 "$MOCK_BINARY")" >"${INSTALL_DIR}/cli-checksums.txt"
+  invoke_installer "v0.18.0" "Linux" "x86_64"
+  assert_success
+  assert_contains "${CASE_DIR}/output.log" "Verified SHA-256 checksum"
+  assert_contains "$MOCK_CURL_LOG" "/v0.18.0/linear-release-linux-x64"
+  if grep -Eq 'api.github.com|checksums.txt' "$MOCK_CURL_LOG"; then
+    echo "Committed checksum install made a metadata or checksums.txt request" >&2
+    command cat "$MOCK_CURL_LOG" >&2
+    return 1
+  fi
+  cmp "$MOCK_BINARY" "${OUTPUT_DIR}/linear-release"
+}
+
+test_committed_checksum_mismatch() {
+  new_case "committed-checksum-mismatch"
+  printf 'committed-binary\n' >"$MOCK_BINARY"
+  printf 'v0.18.0 %064d linear-release-linux-x64\n' 0 >"${INSTALL_DIR}/cli-checksums.txt"
+  invoke_installer "v0.18.0" "Linux" "x86_64"
+  assert_failure
+  assert_contains "${CASE_DIR}/output.log" "checksum mismatch"
+  assert_not_installed
+}
+
 test_invalid_metadata() {
   new_case "missing-checksum"
   printf 'verified-binary\n' >"$MOCK_BINARY"
@@ -204,6 +234,8 @@ tests=(
   test_legacy_latest
   test_verified_release
   test_tampered_release
+  test_committed_checksum
+  test_committed_checksum_mismatch
   test_invalid_metadata
   test_metadata_fetch_failure
   test_unsupported_platform

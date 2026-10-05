@@ -18,7 +18,7 @@ jobs:
           persist-credentials: false
 
       - name: Lint shell scripts
-        run: shellcheck install.sh run.sh tests/*.test.sh tests/mocks/*
+        run: shellcheck install.sh run.sh scripts/*.sh tests/*.test.sh tests/mocks/*
 
       - name: Test installer verification
         run: bash tests/install.test.sh
@@ -30,6 +30,20 @@ jobs:
         run: |
           npm install -g @action-validator/cli
           action-validator action.yml
+
+  verify-checksums:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Verify pinned CLI checksums against releases
+        run: bash scripts/verify-checksums.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   test-install:
     strategy:
@@ -54,7 +68,7 @@ jobs:
 
   sync-release:
     name: Sync release management
-    needs: [lint, test-install]
+    needs: [lint, verify-checksums, test-install]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
