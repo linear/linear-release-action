@@ -69,9 +69,9 @@ inputs:
     required: false
     default: v0.18.0
   github_token:
-    description: GitHub token used to authenticate release metadata and downloads. Defaults to the workflow's automatic token, which avoids the lower anonymous API rate limit.
+    description: github.com token used to authenticate release metadata and downloads. Defaults to the workflow's automatic token on github.com, which avoids the lower anonymous API rate limit. On GitHub Enterprise the automatic token is not valid for github.com, so requests are anonymous unless you pass a github.com token.
     required: false
-    default: ${{ github.token }}
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
 
 outputs:
   release-id:

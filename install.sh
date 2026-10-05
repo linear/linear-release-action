@@ -26,7 +26,10 @@ fetch_release() {
   if [[ -n "${GITHUB_TOKEN:-}" ]]; then
     api_curl_args+=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
   fi
-  curl "${api_curl_args[@]}" "${RELEASES_API}/${endpoint}"
+  if ! curl "${api_curl_args[@]}" "${RELEASES_API}/${endpoint}"; then
+    error "Could not fetch CLI release metadata from api.github.com. A 401 means github_token isn't valid for github.com; a 403 usually means the anonymous rate limit. Set github_token to a github.com token, such as a fine-grained personal access token with no permissions."
+    return 1
+  fi
 }
 
 release_asset_url() {

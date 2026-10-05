@@ -174,6 +174,17 @@ test_invalid_metadata() {
   assert_not_installed
 }
 
+test_metadata_fetch_failure() {
+  new_case "metadata-fetch-failure"
+  printf 'verified-binary\n' >"$MOCK_BINARY"
+  : >"$MOCK_CHECKSUMS"
+  write_release "v0.17.0" true "linear-release-linux-x64" true
+  MOCK_CURL_FAIL_PATTERN="api.github.com" invoke_installer "v0.17.0" "Linux" "x86_64"
+  assert_failure
+  assert_contains "${CASE_DIR}/output.log" "Set github_token to a github.com token"
+  assert_not_installed
+}
+
 test_unsupported_platform() {
   new_case "unsupported-platform"
   printf 'binary\n' >"$MOCK_BINARY"
@@ -194,6 +205,7 @@ tests=(
   test_verified_release
   test_tampered_release
   test_invalid_metadata
+  test_metadata_fetch_failure
   test_unsupported_platform
 )
 
