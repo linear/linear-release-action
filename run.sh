@@ -110,18 +110,19 @@ if ! jq -e . >/dev/null 2>&1 <<<"$output"; then
   exit 1
 fi
 
-# Parse and write outputs
-{
-  echo "release-id<<EOF"
-  jq -r '.release.id // empty' <<<"$output"
-  echo "EOF"
-  echo "release-name<<EOF"
-  jq -r '.release.name // empty' <<<"$output"
-  echo "EOF"
-  echo "release-version<<EOF"
-  jq -r '.release.version // empty' <<<"$output"
-  echo "EOF"
-  echo "release-url<<EOF"
-  jq -r '.release.url // empty' <<<"$output"
-  echo "EOF"
-} >> "$GITHUB_OUTPUT"
+# Keep API values inside their output block, even when they contain directives.
+emit_output() {
+  local field="$1" value delimiter
+  # A sentinel preserves trailing newlines through command substitution.
+  value=$(jq -j --arg field "$field" '.release[$field] // empty' <<<"$output" && printf '.')
+  value="${value%.}"
+  while :; do
+    delimiter="eof-$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
+    [[ "$value" == *"$delimiter"* ]] || break
+  done
+  printf 'release-%s<<%s\n%s\n%s\n' "$field" "$delimiter" "$value" "$delimiter" >> "$GITHUB_OUTPUT"
+}
+
+for field in id name version url; do
+  emit_output "$field"
+done
