@@ -41,6 +41,7 @@ jobs:
         env:
           GITHUB_ACTION_PATH: ${{ runner.temp }}/output-test
           LINEAR_ACCESS_KEY: unused-mock-key
+          INPUT_NAME: output-isolation-test
         run: bash run.sh
 
       - name: Check outputs parsed by the GitHub runner
