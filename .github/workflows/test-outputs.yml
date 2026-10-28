@@ -1,0 +1,60 @@
+name: Test output isolation
+
+on:
+  push:
+    paths:
+      - run.sh
+      - .github/workflows/test-outputs.yml
+  pull_request:
+    paths:
+      - run.sh
+      - .github/workflows/test-outputs.yml
+
+permissions:
+  contents: read
+
+jobs:
+  outputs:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Prepare mock CLI
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/output-test"
+          cat > "$RUNNER_TEMP/output-test/linear-release" <<'SCRIPT'
+          #!/usr/bin/env bash
+          jq -n --arg name $'Release\nEOF\nrelease-id=forged\nextra-output=injected\nEOF\r\nrelease-id=also-forged\r\n\n' \
+            '{release: {id: "genuine-id", name: $name, version: "v1", url: "https://linear.app"}}'
+          SCRIPT
+          chmod +x "$RUNNER_TEMP/output-test/linear-release"
+
+      - name: Write outputs with the real wrapper
+        id: release
+        shell: bash
+        env:
+          GITHUB_ACTION_PATH: ${{ runner.temp }}/output-test
+          LINEAR_ACCESS_KEY: unused-mock-key
+        run: bash run.sh
+
+      - name: Check outputs parsed by the GitHub runner
+        shell: bash
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.release-id }}
+          RELEASE_NAME: ${{ steps.release.outputs.release-name }}
+          RELEASE_VERSION: ${{ steps.release.outputs.release-version }}
+          RELEASE_URL: ${{ steps.release.outputs.release-url }}
+          EXTRA_OUTPUT: ${{ steps.release.outputs.extra-output }}
+        run: |
+          [[ "$RELEASE_ID" == 'genuine-id' ]]
+          [[ "$RELEASE_NAME" == $'Release\nEOF\nrelease-id=forged\nextra-output=injected\nEOF\r\nrelease-id=also-forged\r\n\n' ]]
+          [[ "$RELEASE_VERSION" == 'v1' ]]
+          [[ "$RELEASE_URL" == 'https://linear.app' ]]
+          [[ -z "$EXTRA_OUTPUT" ]]
+          echo 'GitHub preserved every value and accepted no injected outputs.'

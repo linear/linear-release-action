@@ -9,7 +9,11 @@ cat >"${TEST_ROOT}/linear-release" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 printf '%s\0' "$@" >"$MOCK_ARGS_FILE"
-printf '{"release":null}\n'
+if [[ -n "${MOCK_RESPONSE:-}" ]]; then
+  printf '%s\n' "$MOCK_RESPONSE"
+else
+  printf '{"release":null}\n'
+fi
 EOF
 chmod +x "${TEST_ROOT}/linear-release"
 
@@ -69,3 +73,54 @@ for command in sync complete update; do
   assert_args "$command" --json "--name=Test release" --release-version=v1.2.3 --stage=staging
   echo "ok - $command omits an unset description"
 done
+
+# Compare the entire output file with the expected framing and original values.
+# This rejects extra directives, duplicate outputs, and altered multiline data.
+assert_outputs() {
+  local field header delimiter
+  : >"${TEST_ROOT}/expected-output"
+  for field in id name version url; do
+    header=$(sed -n "/^release-$field<<eof-/p" "${TEST_ROOT}/github-output")
+    delimiter="${header#*<<}"
+    [[ "$header" == "release-$field<<eof-"* && "$header" != *$'\n'* ]]
+    {
+      printf '%s\n' "$header"
+      jq -j --arg field "$field" '.release[$field] // empty' <<<"$response"
+      printf '\n%s\n' "$delimiter"
+    } >>"${TEST_ROOT}/expected-output"
+  done
+  cmp "${TEST_ROOT}/expected-output" "${TEST_ROOT}/github-output"
+}
+
+for payload in '' 'Normal release' \
+  $'release\nEOF\nrelease-id=forged\nextra-output=injected\n' \
+  $'release\r\nEOF\r\nrelease-id<<EOF\r\nforged\r\nEOF\r\n' \
+  $'quotes " \\ $(exit 97)\n\n'; do
+  response=$(jq -n --arg value "$payload" \
+    '{release: {id: $value, name: $value, version: $value, url: $value}}')
+  invoke_runner sync "MOCK_RESPONSE=$response"
+  assert_outputs
+done
+response='{"release":null}'
+invoke_runner sync "MOCK_RESPONSE=$response"
+assert_outputs
+echo 'ok - outputs preserve empty and multiline values without injected directives'
+
+# Force the first random delimiter to collide, then allow a fresh one.
+mkdir -p "${TEST_ROOT}/bin"
+cat >"${TEST_ROOT}/bin/od" <<'EOF'
+#!/usr/bin/env bash
+if [[ ! -e "$MOCK_OD_CALLED" ]]; then
+  touch "$MOCK_OD_CALLED"
+  printf '00000000000000000000000000000000\n'
+else
+  printf '11111111111111111111111111111111\n'
+fi
+EOF
+chmod +x "${TEST_ROOT}/bin/od"
+response=$(jq -n --arg value $'eof-00000000000000000000000000000000\r\nrelease-id=forged' \
+  '{release: {id: $value, name: "Original name", version: "v1", url: "https://linear.app"}}')
+invoke_runner sync "MOCK_RESPONSE=$response" "PATH=${TEST_ROOT}/bin:$PATH" \
+  "MOCK_OD_CALLED=${TEST_ROOT}/od-called"
+assert_outputs
+echo 'ok - colliding delimiters are regenerated'
