@@ -128,8 +128,14 @@ pin_cli_checksums() {
   fi
 
   echo "Pinning checksums for CLI $tag..."
-  local immutable
-  immutable=$(gh api "repos/linear/linear-release/releases/tags/$tag" --jq '.immutable')
+  local immutable current_cli
+  if ! immutable=$(gh api "repos/linear/linear-release/releases/tags/$tag" --jq '.immutable'); then
+    current_cli=$(grep -E '^    default: v[0-9]+\.[0-9]+\.[0-9]+$' action.yml | sed -E 's/.*default: //')
+    echo "Error: Could not fetch CLI release $tag from linear/linear-release."
+    echo "The CLI version defaults to the action version. If they differ, pass it explicitly, e.g.:"
+    echo "  $0 $VERSION --cli-version ${current_cli#v}"
+    exit 1
+  fi
   if [ "$immutable" != "true" ]; then
     echo "Error: CLI release $tag is not immutable."
     exit 1
